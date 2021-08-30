@@ -14,15 +14,15 @@ server.listen(PORT, () => {
   console.log("all good", PORT);
 });
 
-mongoose.connect("mongodb://localhost:27017/cats6", {
+mongoose.connect("mongodb://localhost:27017/uni", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 const unvierstySChema = new mongoose.Schema({
+  country: String,
   email: String,
   universtyName: String,
-
   universtyUrl: String,
 });
 
@@ -91,20 +91,20 @@ class Country {
 }
 
 //////////////////////////////////////////////////////////
-//http://localhost:3001/Adduniversity&email=email  ,universityOb
+//http://localhost:3001/Adduniversity ,universityOb
 async function handlerAdduniverstiy(req, res) {
-  let { email, universtyName, universtyUrll,country } = req.body; // same name in frontEnd at params in url
+  let { email, universtyName, universtyUrl,country } = req.body; // same name in frontEnd at params in url
   
-  await universtyModel.create({ email, universtyName, universtyUrll,country }); // same name in frontEnd at params in url
+  await universtyModel.create({ email, universtyName, universtyUrl,country }); // same name in frontEnd at params in url
 
-  universtyModel.find({ email }, function (err, ownerData) {
-    if (err) {
-      console.log("error in getting the data");
-    } else {
-      console.log(ownerData);
-      res.send(ownerData);
-    }
-  });
+  // universtyModel.find({ email }, function (err, ownerData) {
+  //   if (err) {
+  //     console.log("error in getting the data");
+  //   } else {
+  //     console.log(ownerData);
+  //     res.send(ownerData);
+  //   }
+  // });
 }
 
 function deleteuniversityhandler(req, res) {
