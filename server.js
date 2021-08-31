@@ -33,6 +33,7 @@ const universtyModel = mongoose.model("unviersty", unvierstySChema);
 server.get("/search", HandlerSearch); //1
 server.post("/Adduniversity", handlerAdduniverstiy); //2
 server.delete("/delete/:universityId", deleteuniversityhandler);
+server.get('/faviorate',favioratehandler)
 
 //// http://localhost:3001/search?country=Jordan
 
@@ -94,7 +95,7 @@ class Country {
 //http://localhost:3001/Adduniversity ,universityOb
 async function handlerAdduniverstiy(req, res) {
   let { email, universtyName, universtyUrl,country } = req.body; // same name in frontEnd at params in url
-  
+  console.log(req.body);
   await universtyModel.create({ email, universtyName, universtyUrl,country }); // same name in frontEnd at params in url
 
   // universtyModel.find({ email }, function (err, ownerData) {
@@ -130,4 +131,23 @@ function deleteuniversityhandler(req, res) {
       });
     }
   });
+}
+
+//http://localhost:3001/faviorate?email=email
+
+
+function favioratehandler(req,res){
+let email=req.query.email;
+universtyModel.find({ email }, function (err, ownerData) {
+    if (err) {
+      console.log("error in getting the data");
+    } else {
+      console.log(ownerData);
+      res.send(ownerData);
+    }
+  });
+
+
+
+
 }
