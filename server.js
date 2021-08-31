@@ -33,7 +33,7 @@ const universtyModel = mongoose.model("unviersty", unvierstySChema);
 server.get("/search", HandlerSearch); //1
 server.post("/Adduniversity", handlerAdduniverstiy); //2
 server.delete("/delete/:universityId", deleteuniversityhandler);
-server.get('/faviorate',favioratehandler)
+server.get('/faviorate',favioratehandler);
 
 //// http://localhost:3001/search?country=Jordan
 
@@ -109,7 +109,7 @@ async function handlerAdduniverstiy(req, res) {
 }
 
 function deleteuniversityhandler(req, res) {
-  
+  console.log("request true");
 // let bookData= await axios.delete(`${process.env.REACT_APP_SERVER}/deleteBook/${bookID}?email=${user.email}`)
 //to get id from req
   let universityId = req.params.universityId;
@@ -117,11 +117,12 @@ function deleteuniversityhandler(req, res) {
   //to get email from req
   let email = req.query.email;
   // to remove data has the id
-  bookModel.remove({ _id: universityId }, (error, universityData) => {
+  universtyModel.remove({ _id: universityId }, (error, universityData) => {
+
     if (error) {
       console.log("error in deleteing the data");
     } else {
-    
+      console.log('universityData',universityData);
       universtyModel.find({ email }, function (err, universitiesData) {
         if (err) {
           console.log("error in getting the data");
