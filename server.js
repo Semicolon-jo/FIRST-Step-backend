@@ -26,7 +26,16 @@ const unvierstySChema = new mongoose.Schema({
   universtyUrl: String,
 });
 
+const noteSChema = new mongoose.Schema({
+  note: String,
+  email: String,
+
+});
+
 const universtyModel = mongoose.model("unviersty", unvierstySChema);
+
+const noteModel = mongoose.model("note", noteSChema);
+
 
 ///// routes
 
@@ -34,6 +43,13 @@ server.get("/search", HandlerSearch); //1
 server.post("/Adduniversity", handlerAdduniverstiy); //2
 server.delete("/delete/:universityId", deleteuniversityhandler);
 server.get('/faviorate',favioratehandler);
+server.post("/AddNote", handlerAddNote); 
+//// http://localhost:3001/getNotes?email=>>>@
+
+server.get('/getNotes',getNoteshandler);
+
+server.put('/updateNote/:noteID',updateNoteHandler)
+
 
 //// http://localhost:3001/search?country=Jordan
 
@@ -151,4 +167,54 @@ universtyModel.find({ email }, function (err, ownerData) {
 
 
 
+}
+
+//// http://localhost:3001/AddNote?email=.....@
+
+async function handlerAddNote(req,res){
+  console.log("req hitt");
+  let { note, email } = req.body;
+  console.log(req.body);
+  await noteModel.create({ note, email });
+
+}
+
+//// http://localhost:3001/updateNote
+
+function updateNoteHandler(req,res){
+  let {note,email} = req.body;
+  let noteID = req.params.noteID;
+  console.log(req.body)
+  noteModel.findOne({_id:noteID},(error,noteInfo) =>{
+      console.log(noteInfo)
+      noteInfo.note = note;
+      noteInfo.email= email;
+      console.log('aaaaaaaaaaaa',noteInfo)
+      noteInfo.save()
+      .then(()=>{
+        noteModel.find({ email }, function (err, ownerData) {
+              if (err) {
+                  console.log('error in getting the data')
+              } else {
+                  // console.log(ownerData);
+                  res.send(ownerData)
+              }
+          })
+      }).catch(error=>{
+          console.log('error in saving ')
+      })
+  })
+}
+
+
+function getNoteshandler(req,res){
+  let email=req.query.email;
+noteModel.find({ email }, function (err, ownerData) {
+    if (err) {
+      console.log("error in getting the data");
+    } else {
+      console.log(ownerData);
+      res.send(ownerData);
+    }
+  });
 }
