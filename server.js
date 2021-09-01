@@ -42,13 +42,9 @@ const noteModel = mongoose.model("note", noteSChema);
 server.get("/search", HandlerSearch); //1
 server.post("/Adduniversity", handlerAdduniverstiy); //2
 server.delete("/delete/:universityId", deleteuniversityhandler);
-server.get('/faviorate',favioratehandler);
-server.post("/AddNote", handlerAddNote); 
-//// http://localhost:3001/getNotes?email=>>>@
-
-server.get('/getNotes',getNoteshandler);
-
-server.put('/updateNote/:noteID',updateNoteHandler)
+server.get('/faviorate', favioratehandler);
+server.post("/AddNote", handlerAddNote);
+server.put('/updateNote', updateNoteHandler)
 
 
 //// http://localhost:3001/search?country=Jordan
@@ -87,7 +83,7 @@ class unviersty {
 
     this.universtyName = data.name;
     this.universtyUrl = data.web_pages[0];
-    this.country=data.country;
+    this.country = data.country;
   }
 }
 
@@ -110,9 +106,9 @@ class Country {
 //////////////////////////////////////////////////////////
 //http://localhost:3001/Adduniversity ,universityOb
 async function handlerAdduniverstiy(req, res) {
-  let { email, universtyName, universtyUrl,country } = req.body; // same name in frontEnd at params in url
-  console.log(req.body);
-  await universtyModel.create({ email, universtyName, universtyUrl,country }); // same name in frontEnd at params in url
+  let { email, universtyName, universtyUrl, country } = req.body; // same name in frontEnd at params in url
+  // console.log(req.body);
+  await universtyModel.create({ email, universtyName, universtyUrl, country }); // same name in frontEnd at params in url
 
   // universtyModel.find({ email }, function (err, ownerData) {
   //   if (err) {
@@ -126,8 +122,8 @@ async function handlerAdduniverstiy(req, res) {
 
 function deleteuniversityhandler(req, res) {
   console.log("request true");
-// let bookData= await axios.delete(`${process.env.REACT_APP_SERVER}/deleteBook/${bookID}?email=${user.email}`)
-//to get id from req
+  // let bookData= await axios.delete(`${process.env.REACT_APP_SERVER}/deleteBook/${bookID}?email=${user.email}`)
+  //to get id from req
   let universityId = req.params.universityId;
 
   //to get email from req
@@ -138,7 +134,7 @@ function deleteuniversityhandler(req, res) {
     if (error) {
       console.log("error in deleteing the data");
     } else {
-      console.log('universityData',universityData);
+      console.log('universityData', universityData);
       universtyModel.find({ email }, function (err, universitiesData) {
         if (err) {
           console.log("error in getting the data");
@@ -153,9 +149,9 @@ function deleteuniversityhandler(req, res) {
 //http://localhost:3001/faviorate?email=email
 
 
-function favioratehandler(req,res){
-let email=req.query.email;
-universtyModel.find({ email }, function (err, ownerData) {
+function favioratehandler(req, res) {
+  let email = req.query.email;
+  universtyModel.find({ email }, function (err, ownerData) {
     if (err) {
       console.log("error in getting the data");
     } else {
@@ -170,51 +166,54 @@ universtyModel.find({ email }, function (err, ownerData) {
 }
 
 //// http://localhost:3001/AddNote?email=.....@
-
-async function handlerAddNote(req,res){
-  console.log("req hitt");
+// ------ Add not and keep note shown event after refrech the page ----------
+async function handlerAddNote(req, res) {
+  // console.log("req hitt");
+  console.log("req.queryr", req.body);
+  // console.log(req.body);
   let { note, email } = req.body;
-  console.log(req.body);
+
   await noteModel.create({ note, email });
+  noteModel.find({email},(error,noteData)=>{
+    if (error) {
+      res.send(error);
+    } else {
+      // console.log('11111',noteData);
+      res.send(noteData);
+    }
+
+  })
 
 }
 
 //// http://localhost:3001/updateNote
+// -------- ubdate on the note ---------
+function updateNoteHandler(req, res) {
+  let { note, email } = req.body;
 
-function updateNoteHandler(req,res){
-  let {note,email} = req.body;
-  let noteID = req.params.noteID;
-  console.log(req.body)
-  noteModel.findOne({_id:noteID},(error,noteInfo) =>{
-      console.log(noteInfo)
+  // console.log(req.body)
+  noteModel.findOne({ email }, (error, noteInfo) => {
+    if (error) {
+      res.send(error);
+    } else {
+
       noteInfo.note = note;
-      noteInfo.email= email;
-      console.log('aaaaaaaaaaaa',noteInfo)
+      noteInfo.email = email;
       noteInfo.save()
-      .then(()=>{
-        noteModel.find({ email }, function (err, ownerData) {
-              if (err) {
-                  console.log('error in getting the data')
-              } else {
-                  // console.log(ownerData);
-                  res.send(ownerData)
-              }
+        .then(() => {
+          noteModel.find({ email }, function (err, ownerData) {
+            if (err) {
+              console.log('error in getting the data',error);
+            } else {
+              console.log('ownerData',ownerData);
+              res.send(ownerData)
+            }
           })
-      }).catch(error=>{
+        }).catch(error => {
           console.log('error in saving ')
-      })
+        })
+    }
   })
 }
 
 
-function getNoteshandler(req,res){
-  let email=req.query.email;
-noteModel.find({ email }, function (err, ownerData) {
-    if (err) {
-      console.log("error in getting the data");
-    } else {
-      console.log(ownerData);
-      res.send(ownerData);
-    }
-  });
-}
