@@ -2,7 +2,6 @@
 const axios = require("axios");
 const express = require("express");
 require("dotenv").config();
-const PORT = 3001;
 const cors = require("cors");
 const server = express();
 server.use(cors());
@@ -10,11 +9,11 @@ server.use(express.json());
 
 const mongoose = require("mongoose");
 
-server.listen(PORT, () => {
-  console.log("all good", PORT);
+server.listen(process.env.PORT, () => {
+  console.log("all good", process.env.PORT);
 });
 
-mongoose.connect("mongodb://localhost:27017/uni", {
+mongoose.connect(process.env.MONGO_APP, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
